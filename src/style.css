@@ -1,0 +1,58 @@
+:root {
+  font-family: Helvetica, sans-serif;
+  line-height: 1;
+  color: rgb(0, 0, 0);
+  background-color: #000000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Helvetica, sans-serif;
+  margin: 0;
+  display: flex;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+main {
+  width: 100vw;
+}
+
+h1 {
+  font-size: 28.2vw;
+  margin: 0;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.hero {
+  background-color: white;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  padding: 20px;
+  align-items: center;
+}
+
+.hero_content {
+  width: 100%;
+  padding-top: 8vh;
+  text-align: center;
+}
+
+[data-transition="container"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
