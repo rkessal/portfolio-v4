@@ -19,7 +19,7 @@ export async function defaultTransition(currentContainer, nextContainer) {
     y: '-30vh',
     opacity: 0.6,
     force3D: true,
-    duration: 0.6,
+    duration: 1,
     scale: 0.8,
     ease: 'power2.inOut'
   }, 0).to(nextContainer, {

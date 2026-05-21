@@ -5,9 +5,9 @@ const routes = {
     namespace: 'home',
     loader: () => import('./pages/home/home.js')
   },
-  '/alternative-page': {
-    namespace: 'alternative-page',
-    loader: () => import('./pages/alternative-page/alternative-page.js')
+  '/about': {
+    namespace: 'about',
+    loader: () => import('./pages/about/about.js')
   },
 }
 
@@ -30,6 +30,10 @@ class Router {
 
     const container = document.querySelector('[data-transition="container"]')
     container.setAttribute('data-namespace', route.namespace)
+
+    if (pageModule.init) {
+      pageModule.init({ container });
+    }
 
     this.currentNamespace = route.namespace
   }
