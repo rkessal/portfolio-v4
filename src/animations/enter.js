@@ -1,22 +1,31 @@
 import gsap from "gsap"
+import { SplitText } from "gsap/SplitText"
 
 const ENTER = (nextContainer, delay) => {
-  const t = nextContainer?.querySelector('h1')
+  const t = nextContainer?.querySelectorAll('.home__projects__title, .home__projects__list li')
 
   if (!t) return null
 
-  gsap.set(t, { y: '100%' })
 
   const tl = gsap.timeline({
     delay
   })
 
-  tl.to(t, {
-    y: 0,
-    duration: 1,
-    force3D: true,
-    ease: 'expo.out'
-  }, 0)
+  SplitText.create(t, {
+    type: "lines, words",
+    mask: "lines",
+    autoSplit: true,
+    onSplit(self) {
+      return gsap.from(self.words, {
+        duration: 1.5,
+        force3D: true,
+        ease: 'expo.out',
+        y: 100,
+        autoAlpha: 0,
+        stagger: 0.05
+      });
+    }
+  });
 
   return { timeline: tl }
 }

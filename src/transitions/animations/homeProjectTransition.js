@@ -1,0 +1,150 @@
+import gsap from "gsap";
+import { canvas } from "../../canvas";
+import ENTER from "../../animations/projects/enter";
+import { router } from "../../router";
+
+export async function homeProjectTransition(currentContainer, nextContainer, currentCanvas, params) {
+  const { medias } = currentCanvas.getState()
+
+  const currentMedia = medias.find(media => {
+    const link = media.element.closest('a')
+    const path = new URL(link.href).pathname
+    const currentPath = window.location.pathname
+
+    return path === currentPath
+  })
+
+  currentCanvas.onTransition()
+
+  const mainImage = nextContainer.querySelector('.project__main-image')
+
+  gsap.set(nextContainer, {
+    clipPath: 'inset(0% 0% 100% 0%)',
+    opacity: 1,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: '100vh',
+    willChange: 'transform, clip-path, scale'
+  })
+
+  const tl = gsap.timeline()
+
+  tl.to('.nav', {
+    autoAlpha: 0,
+    yPercent: -100,
+  })
+  tl.to(currentContainer, {
+    autoAlpha: 0.6,
+    force3D: true,
+    duration: 1.6,
+    ease: 'power2.inOut',
+  }, 0)
+  tl.to('.home__projects__left', {
+    autoAlpha: 0,
+    duration: 0.6,
+    ease: 'power2.inOut',
+  }, 0)
+
+  medias.filter(media => media !== currentMedia).forEach(media => {
+    media.mesh.position.z = 0.0001
+    tl.to(media.program.uniforms.uAlpha, {
+      value: 0,
+    }, 0)
+  })
+
+  const bounds = mainImage.getBoundingClientRect()
+  currentMedia.transitionToProject(tl, bounds)
+
+  tl.to(nextContainer, {
+    clipPath: 'inset(0% 0% 0% 0%)',
+    duration: 0.6,
+    force3D: true,
+    ease: 'power2.inOut'
+  }, '>')
+
+  const currentNamespace = currentContainer.getAttribute('data-namespace')
+  const nextNamespace = nextContainer.getAttribute('data-namespace')
+
+  tl.to(currentContainer, {
+    onStart: () => canvas.emit(`transition-${currentNamespace}->${nextNamespace}`, {
+      currentMedia,
+      params,
+    })
+  })
+
+  ENTER(nextContainer, 2)
+
+
+  return tl
+}
+
+export async function projectHomeTransition(currentContainer, nextContainer, currentCanvas) {
+  const { medias } = currentCanvas.getState()
+
+  gsap.set(nextContainer, {
+    clipPath: 'inset(100% 0% 0% 0%)',
+    opacity: 1,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: '100vh',
+    willChange: 'transform, clip-path, scale'
+  })
+
+  currentCanvas.onTransition()
+
+  const tl = gsap.timeline()
+
+  medias.forEach(media => {
+    tl.to(media.program.uniforms.uAlpha, {
+      value: 0,
+    }, 0)
+  })
+
+  tl.to('.project__nav', {
+    yPercent: -100,
+    autoAlpha: 0
+  }, 0)
+  tl.to('.project__link', {
+    yPercent: 100,
+    autoAlpha: 0,
+  }, 0)
+
+  const currentNamespace = currentContainer.getAttribute('data-namespace')
+  const nextNamespace = nextContainer.getAttribute('data-namespace')
+
+  tl.to(currentContainer, {
+    onStart: () => canvas.emit(`transition-${currentNamespace}->${nextNamespace}`)
+  })
+
+  tl.to('.nav', {
+    autoAlpha: 1,
+    yPercent: 0
+  }, '>')
+
+  tl.to('.line', {
+    duration: 1.5,
+    force3D: true,
+    ease: 'expo.out',
+    yPercent: -100,
+    autoAlpha: 0,
+    stagger: 0.05
+  }, 0)
+
+  tl.to(currentContainer, {
+    autoAlpha: 0.6,
+    force3D: true,
+    duration: 0.6,
+    ease: 'power2.inOut',
+  }, 0).to(nextContainer, {
+    clipPath: 'inset(0% 0% 0% 0%)',
+    duration: 0.6,
+    ease: 'power2.inOut',
+    force3D: true,
+  }, 0)
+
+  return tl
+}

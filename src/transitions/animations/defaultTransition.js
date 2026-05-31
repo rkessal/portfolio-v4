@@ -10,7 +10,7 @@ export async function defaultTransition(currentContainer, nextContainer) {
     width: "100%",
     height: '100vh',
     zIndex: 10,
-    willChange: 'transform, clip-path'
+    willChange: 'transform, clip-path, scale'
   })
 
   const tl = gsap.timeline()
@@ -20,8 +20,8 @@ export async function defaultTransition(currentContainer, nextContainer) {
     opacity: 0.6,
     force3D: true,
     duration: 1,
-    scale: 0.8,
-    ease: 'power2.inOut'
+    ease: 'power2.inOut',
+    scale: 0.9,
   }, 0).to(nextContainer, {
     clipPath: 'inset(0% 0% 0% 0%)',
     duration: 1,

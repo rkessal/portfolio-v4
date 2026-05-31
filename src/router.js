@@ -1,15 +1,28 @@
+import { canvas } from './canvas.js'
 import { executeTransition } from './transitions/pageTransitions.js'
 
-const routes = {
-  '/': {
+const routes = [
+  {
+    pattern: /^\/$/,
     namespace: 'home',
-    loader: () => import('./pages/home/home.js')
+    loader: () => import('./pages/home/home.js'),
   },
-  '/about': {
+  {
+    pattern: /^\/about$/,
     namespace: 'about',
     loader: () => import('./pages/about/about.js')
   },
-}
+  {
+    pattern: /^\/projects\/(?<id>[^/]+)$/,
+    namespace: 'project',
+    loader: () => import('./pages/projects/projects.js')
+  },
+  {
+    pattern: /^.*$/,
+    namespace: '404',
+    loader: () => import('./pages/not-found/not-found.js')
+  },
+]
 
 class Router {
   constructor() {
@@ -17,25 +30,35 @@ class Router {
     this.isTransitioning = false
   }
 
+  matchRoute(path) {
+    for (const route of routes) {
+      const match = path.match(route.pattern)
+      if (match) {
+        return { route, params: match.groups ?? {} }
+      }
+    }
+    return null
+  }
+
   async loadInitialPage() {
     const path = window.location.pathname
-    const route = routes[path]
+    const { route, params } = this.matchRoute(path)
 
-    console.log(route)
     const pageModule = await route.loader()
 
     const content = document.querySelector('#page_content')
-    content.innerHTML = pageModule.default()
-
+    content.innerHTML = pageModule.default({ params })
 
     const container = document.querySelector('[data-transition="container"]')
     container.setAttribute('data-namespace', route.namespace)
 
     if (pageModule.init) {
-      pageModule.init({ container });
+      await pageModule.init({ container });
+      canvas.emit('init', { namespace: route.namespace, params })
     }
 
     this.currentNamespace = route.namespace
+    this.currentModule = pageModule
   }
 
   async navigate(path) {
@@ -56,7 +79,7 @@ class Router {
 
       e.preventDefault()
 
-      if (this.isTransitioning) return
+      if (this.isTransitioning || canvas.isTransitioning()) return
 
       const path = new URL(link.href).pathname
       this.navigate(path)
@@ -70,23 +93,27 @@ class Router {
   }
 
   async performTransition(path) {
-    if (this.isTransitioning) return
+    if (this.isTransitioning || canvas.isTransitioning()) return
     this.isTransitioning = true
 
     try {
-      const route = routes[path]
+      const { route, params } = this.matchRoute(path)
 
-      if (!route || this.currentNamespace === route.namespace) return
+      const isDynamic = Object.keys(params).length > 0
+      if (!isDynamic && this.currentNamespace === route.namespace) return
 
       const pageModule = await route.loader()
 
       await executeTransition({
-        nextHTML: pageModule.default(),
+        nextHTML: pageModule.default({ params }),
         nextNamespace: route.namespace,
         nextModule: pageModule,
+        currentModule: this.currentModule,
+        params,
       })
 
       this.currentNamespace = route.namespace
+      this.currentModule = pageModule
     } finally {
       this.isTransitioning = false
     }
