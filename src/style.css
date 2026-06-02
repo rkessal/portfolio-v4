@@ -214,6 +214,30 @@ img {
   padding-inline: var(--base-spacing);
 }
 
+.link {
+  display: inline-block;
+  position: relative;
+  padding-bottom: 0.2rem;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
 nav {
   padding: var(--base-spacing);
   position: fixed;
@@ -467,6 +491,60 @@ nav {
   margin-right: calc(4 * var(--base-spacing));
   opacity: 0;
 }
+
+[data-project-id="juri"] {
+  background-color: #F3F7FA;
+}
+
+[data-project-id="juri"] .project__link a,
+[data-project-id="juri"] .project__details__table__line-col-1,
+[data-project-id="juri"] .project__nav__title,
+[data-project-id="juri"] .project__nav__number {
+  color: #E082A8;
+}
+
+
+[data-project-id="juri"] .project__next-project__name {
+  color: #98A57D;
+}
+
+[data-project-id="limeears"] {
+  background-color: #F1F0F0;
+}
+
+[data-project-id="limeears"] .project__link a,
+[data-project-id="limeears"] .project__details__table__line-col-1,
+[data-project-id="limeears"] .project__nav__title,
+[data-project-id="limeears"] .project__nav__number {
+  color: #98A57D;
+}
+
+[data-project-id="gilbalfas"] {
+  background-color: #0D0D0D;
+  color: #E0E0E0;
+}
+
+[data-project-id="gilbalfas"] .project__link a,
+[data-project-id="gilbalfas"] .project__details__table__line-col-1,
+[data-project-id="gilbalfas"] .project__nav__title,
+[data-project-id="gilbalfas"] .project__nav__number {}
+
+[data-project-id="kyoto"] {
+  background-color: #F9F9F9;
+}
+
+[data-project-id="kyoto"] .project__link a,
+[data-project-id="kyoto"] .project__details__table__line-col-1,
+[data-project-id="kyoto"] .project__nav__title,
+[data-project-id="kyoto"] .project__nav__number {
+  color: #000000;
+}
+
+[data-project-id="kyoto"] .project__next-project__name {
+  color: #E082A8;
+}
+
+
 
 
 .project__details {

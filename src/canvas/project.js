@@ -170,7 +170,9 @@ export function createProjectCanvas() {
   function onOverscroll(percent) {
     if (destroyed) return
     const cleanPercent = gsap.utils.clamp(0, 100, percent)
-    nextProject.counter.innerText = `${cleanPercent}%`
+    if (nextProject.counter.innerText !== `${cleanPercent}%`) {
+      nextProject.counter.innerText = `${cleanPercent}%`
+    }
 
     if (percent >= 100) {
       nextProject.link.click()

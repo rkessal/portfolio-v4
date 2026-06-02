@@ -11,6 +11,10 @@ export default class AboutMedia {
     this.scene = scene
     this.index = index
     this.gl = canvas.gl
+    this.originalScale = {
+      x: 0,
+      y: 0
+    }
 
     this.sizes = canvas.sizes
 
@@ -74,6 +78,9 @@ export default class AboutMedia {
 
     this.mesh.scale.x = this.sizes.width * this.width
     this.mesh.scale.y = this.sizes.height * this.height
+
+    this.originalScale.x = this.mesh.scale.x
+    this.originalScale.y = this.mesh.scale.y
 
     this.program.uniforms.uPlaneSizes.value = [this.mesh.scale.x, this.mesh.scale.y]
   }

@@ -70,6 +70,8 @@ export function createAboutCanvas() {
     const delay = 0.8
     medias.forEach(media => {
       media.enter(onFinishTransition, delay)
+      media.element.addEventListener('mouseenter', () => onMouseEnter(media))
+      media.element.addEventListener('mouseleave', () => onMouseLeave(media))
     })
     onResize()
   }
@@ -83,6 +85,26 @@ export function createAboutCanvas() {
       isTransitioning = false
       canvas.handleScroll(false)
     }
+  }
+
+  function onMouseEnter(media) {
+    gsap.to(media.mesh.scale, {
+      x: media.mesh.scale.x * 1.15,
+      y: media.mesh.scale.y * 1.15,
+      duration: 1.5,
+      ease: 'expo.out'
+    })
+
+  }
+
+  function onMouseLeave(media) {
+    console.log(media.originalScale)
+    gsap.to(media.mesh.scale, {
+      x: media.originalScale.x,
+      y: media.originalScale.y,
+      duration: 1.5,
+      ease: 'expo.out'
+    })
   }
 
   function onScroll(e) {
@@ -126,6 +148,8 @@ export function createAboutCanvas() {
     offUpdate()
     offTransition()
     medias.forEach(m => {
+      m.element.removeEventListener('mouseenter', onMouseEnter)
+      m.element.removeEventListener('mouseleave', onMouseLeave)
       m.destroy()
     })
 

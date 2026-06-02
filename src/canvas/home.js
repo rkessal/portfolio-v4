@@ -100,12 +100,21 @@ export function createHomeCanvas() {
 
     hovering = true
 
+    media.mesh.position.z = 0.00011
+
     selectProject(media.index)
 
     gsap.to(media.program.uniforms.uSaturation, {
       value: 1,
       duration: 0.5,
       ease: 'expo.out',
+    })
+
+    gsap.to(media.mesh.scale, {
+      x: media.mesh.scale.x * 1.1,
+      y: media.mesh.scale.y * 1.1,
+      duration: 1.5,
+      ease: 'expo.out'
     })
 
     medias.filter(m => m !== media).forEach(m => {
@@ -124,10 +133,19 @@ export function createHomeCanvas() {
 
     hovering = false
 
+    media.mesh.position.z = 0.00001
+
     gsap.to(media.program.uniforms.uSaturation, {
       value: 0,
       duration: 0.5,
       ease: 'expo.inOut',
+    })
+
+    gsap.to(media.mesh.scale, {
+      x: media.originalScale.x,
+      y: media.originalScale.y,
+      duration: 1.5,
+      ease: 'expo.out'
     })
 
     medias.filter(m => m !== media).forEach(m => {

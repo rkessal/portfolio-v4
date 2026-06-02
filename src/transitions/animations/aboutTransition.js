@@ -6,7 +6,7 @@ import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export async function homeAboutTransition(currentContainer, nextContainer, currentCanvas, params) {
-  const t = nextContainer?.querySelectorAll('.about__title, .about__description p, .about__break__1 span, .about__awards__line p, .about__awards__line span, .about__socials__platform li')
+  const t = nextContainer?.querySelectorAll('.about__title, .about__description p, .about__socials span, .about__awards span .about__break__1 span, .about__awards__line p, .about__awards__line span, .about__socials__platform li')
   const { medias } = currentCanvas.getState()
 
   currentCanvas.onTransition()

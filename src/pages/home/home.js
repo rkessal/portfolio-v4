@@ -11,6 +11,9 @@ export default function HomePage() {
 
 export function init({ container, params, transition }) {
   instance = createHomeCanvas()
+  if (!transition) {
+    ENTER(container)
+  }
 }
 
 export function getCanvas() {

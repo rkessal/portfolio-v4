@@ -9,7 +9,7 @@ let st = []
 const MAIN = ({ container, delay, transition }) => {
   setTimeout(() => {
 
-    const t = container.querySelectorAll(`${transition ? '' : '.about__title, .about__description p, .about__break__1 span,'} .about__awards__line p, .about__awards__line span, .about__socials__platform li`)
+    const t = container.querySelectorAll(`${transition ? '' : '.about__title, .about__description p, .about__break__1 span,'} .about__awards span, .about__socials span, .about__awards__line p, .about__awards__line span, .about__socials__platform li`)
 
     st = SplitText.create(t, {
       type: "lines, words",

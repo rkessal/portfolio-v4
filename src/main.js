@@ -17,10 +17,7 @@ const textures = Object.entries(images).map(([path, url]) => ({
   url: url
 }))
 
-console.log(textures)
-
 await lenis.init()
 await canvas.init()
 await canvas.preload(textures)
-console.log(canvas.textureCache)
 await router.init()
