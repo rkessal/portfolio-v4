@@ -11,9 +11,9 @@ gsap.registerPlugin(SplitText)
 gsap.registerPlugin(ScrollTrigger)
 
 const images = import.meta.glob('/**/*.{webp,jpg,png}', { eager: true, query: '?url', import: 'default' })
-console.log(images)
 const url = new URL(window.location.href)
-const srcs = Object.values(images).map(src => src.replace('/public', '').replace('/assets', '')).map(src => `${url.origin}${src}`)
+const srcs = Object.values(images).map(src => String(src).replace('/public', '').replace('/assets', '')).map(src => `${url.origin}${src}`)
+console.log(srcs)
 
 await lenis.init()
 await canvas.init()
