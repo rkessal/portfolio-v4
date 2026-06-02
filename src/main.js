@@ -10,11 +10,13 @@ import { lenis } from './lenis'
 gsap.registerPlugin(SplitText)
 gsap.registerPlugin(ScrollTrigger)
 
-const images = import.meta.glob('/src/assets/**/*.{webp,jpg,png}', { eager: true, import: 'default' })
+const images = import.meta.glob('/**/*.{webp,jpg,png}', { eager: true, query: '?url', import: 'default' })
+console.log(images)
 const url = new URL(window.location.href)
-const srcs = Object.values(images).map(src => src.replace('/public', '')).map(src => `${url.origin}${src}`)
+const srcs = Object.values(images).map(src => src.replace('/public', '').replace('/assets', '')).map(src => `${url.origin}${src}`)
 
 await lenis.init()
 await canvas.init()
 await canvas.preload(srcs)
+console.log(canvas.textureCache)
 await router.init()
