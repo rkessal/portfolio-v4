@@ -104,8 +104,9 @@ class Canvas {
   }
 
   async preload(srcs) {
-    const promises = srcs.map(src => {
-      if (this.textureCache.has(src)) return Promise.resolve()
+    console.log(srcs)
+    const promises = srcs.map(({ key, url }) => {
+      if (this.textureCache.has(key)) return Promise.resolve()
 
       return new Promise(resolve => {
         const texture = new Texture(this.gl, {
@@ -114,16 +115,17 @@ class Canvas {
           magFilter: this.gl.LINEAR,
         })
 
+        console.log(url)
         const image = new Image()
-        image.src = src
+        image.src = url
         image.onload = () => {
           texture.image = image
-          this.textureCache.set(src, texture)
+          this.textureCache.set(key, texture)
           resolve()
         }
 
         image.onerror = (err) => {
-          console.log(err)
+          // console.log(err)
           resolve()
         }
       })

@@ -23,7 +23,7 @@ export default class HomeMedia {
   }
 
   createTexture() {
-    const cached = canvas.getTexture(this.element.src)
+    const cached = canvas.getTexture(this.element.getAttribute('data-src'))
 
     this.texture = cached
   }

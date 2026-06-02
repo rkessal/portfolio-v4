@@ -24,7 +24,7 @@ export default class ProjectMedia {
   }
 
   createTexture() {
-    const cached = canvas.getTexture(this.element.src)
+    const cached = canvas.getTexture(this.element.getAttribute('data-src'))
 
     this.texture = cached
   }

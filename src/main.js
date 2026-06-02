@@ -12,11 +12,15 @@ gsap.registerPlugin(ScrollTrigger)
 
 const images = import.meta.glob('/**/*.{webp,jpg,png}', { eager: true, query: '?url', import: 'default' })
 const url = new URL(window.location.href)
-const srcs = Object.values(images).map(src => src.replace('/public', '')).map(src => `${url.origin}${src}`)
-console.log(srcs)
+const textures = Object.entries(images).map(([path, url]) => ({
+  key: path.replace('/public', '').replace('/assets', ''),
+  url: url.replace('/public', '').replace('/assets', '')
+}))
+
+console.log(textures)
 
 await lenis.init()
 await canvas.init()
-await canvas.preload(srcs)
+await canvas.preload(textures)
 console.log(canvas.textureCache)
 await router.init()
