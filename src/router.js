@@ -53,7 +53,7 @@ class Router {
     container.setAttribute('data-namespace', route.namespace)
 
     if (pageModule.init) {
-      await pageModule.init({ container });
+      await pageModule.init({ container, params });
       canvas.emit('init', { namespace: route.namespace, params })
     }
 
@@ -71,6 +71,7 @@ class Router {
 
   async init() {
     await this.loadInitialPage()
+    canvas.handleScroll(true)
 
     document.addEventListener('click', e => {
       const link = e.target.closest('a')
@@ -95,6 +96,7 @@ class Router {
   async performTransition(path) {
     if (this.isTransitioning || canvas.isTransitioning()) return
     this.isTransitioning = true
+    canvas.handleScroll(true)
 
     try {
       const { route, params } = this.matchRoute(path)

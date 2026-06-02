@@ -4,8 +4,7 @@ uniform vec2 uPlaneSizes;
 uniform vec2 uImageSizes;
 
 uniform float uAlpha;
-uniform float uRotation;
-uniform float uProgress;
+uniform float uSaturation;
 varying vec2 vUv;
 
 void main() {
@@ -20,10 +19,10 @@ void main() {
     );
 
     vec4 tex = texture2D(tMap, uv);
-    tex.a *= uProgress * uAlpha;
+    tex.a *= uAlpha;
 
     float grey = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
-    tex.rgb = mix(vec3(grey), tex.rgb, 1.0 - (uRotation * 2.0));
+    tex.rgb = mix(vec3(grey), tex.rgb, 1.0 - (uSaturation * 2.0));
 
     gl_FragColor = tex;
 }

@@ -21,7 +21,6 @@ export async function defaultTransition(currentContainer, nextContainer) {
     force3D: true,
     duration: 1,
     ease: 'power2.inOut',
-    scale: 0.9,
   }, 0).to(nextContainer, {
     clipPath: 'inset(0% 0% 0% 0%)',
     duration: 1,

@@ -48,7 +48,7 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
   }, 0)
 
   medias.filter(media => media !== currentMedia).forEach(media => {
-    media.mesh.position.z = 0.0001
+    media.mesh.position.z = 0.00001
     tl.to(media.program.uniforms.uAlpha, {
       value: 0,
     }, 0)
@@ -64,9 +64,6 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
     ease: 'power2.inOut'
   }, '>')
 
-  const currentNamespace = currentContainer.getAttribute('data-namespace')
-  const nextNamespace = nextContainer.getAttribute('data-namespace')
-
   tl.to(currentContainer, {
     onStart: () => canvas.emit(`transition-${currentNamespace}->${nextNamespace}`, {
       currentMedia,
@@ -74,8 +71,11 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
     })
   })
 
-  ENTER(nextContainer, 2)
+  const currentNamespace = currentContainer.getAttribute('data-namespace')
+  const nextNamespace = nextContainer.getAttribute('data-namespace')
 
+
+  ENTER(nextContainer, 2)
 
   return tl
 }
@@ -104,6 +104,14 @@ export async function projectHomeTransition(currentContainer, nextContainer, cur
     }, 0)
   })
 
+  gsap.set('.home__projects__left', {
+    autoAlpha: 0
+  })
+
+  tl.to('.home__projects__left', {
+    autoAlpha: 1
+  }, '>')
+
   tl.to('.project__nav', {
     yPercent: -100,
     autoAlpha: 0
@@ -116,14 +124,16 @@ export async function projectHomeTransition(currentContainer, nextContainer, cur
   const currentNamespace = currentContainer.getAttribute('data-namespace')
   const nextNamespace = nextContainer.getAttribute('data-namespace')
 
+
   tl.to(currentContainer, {
     onStart: () => canvas.emit(`transition-${currentNamespace}->${nextNamespace}`)
-  })
+  }, 0)
 
   tl.to('.nav', {
     autoAlpha: 1,
     yPercent: 0
   }, '>')
+
 
   tl.to('.line', {
     duration: 1.5,
@@ -131,7 +141,6 @@ export async function projectHomeTransition(currentContainer, nextContainer, cur
     ease: 'expo.out',
     yPercent: -100,
     autoAlpha: 0,
-    stagger: 0.05
   }, 0)
 
   tl.to(currentContainer, {

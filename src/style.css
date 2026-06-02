@@ -153,6 +153,15 @@ table {
   padding: 0;
 }
 
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 html,
 body {
   overscroll-behavior: none;
@@ -218,6 +227,14 @@ nav {
   align-items: center;
 }
 
+.nav {
+  pointer-events: none;
+}
+
+.nav__title {
+  opacity: 0.7;
+}
+
 .project__nav__number,
 .nav__logo {
   width: var(--col-1);
@@ -243,6 +260,7 @@ nav {
   display: flex;
   flex-direction: row;
   margin-left: auto;
+  pointer-events: all;
 }
 
 .nav__menu li:not(:last-child) {
@@ -252,6 +270,10 @@ nav {
 .home {
   height: 100vh;
   overflow-y: hidden;
+}
+
+.about img {
+  opacity: 0;
 }
 
 .about__hero,
@@ -313,8 +335,6 @@ nav {
   opacity: 0;
 }
 
-
-
 .about__description {
   width: min(100%, 95rem);
   font-size: 3.6rem;
@@ -342,27 +362,27 @@ nav {
 .about__break__1-img-1 {
   margin-left: calc(-10 * var(--base-spacing));
   width: min(100%, 50rem);
-  height: auto;
+  height: 89.5rem;
 }
 
 .about__break__1-img-2 {
   margin-left: calc(20 * var(--base-spacing));
   margin-top: calc(-4 * var(--base-spacing));
   width: min(100%, 50rem);
-  height: auto;
+  height: 66.6rem;
 }
 
 .about__break__2-img-1 {
   margin-left: calc(18 * var(--base-spacing));
   width: min(100%, 55rem);
-  height: auto;
+  height: 98rem;
 }
 
 .about__break__2-img-2 {
   margin-left: calc(-15 * var(--base-spacing));
   margin-top: calc(-6 * var(--base-spacing));
   width: min(100%, 50rem);
-  height: auto;
+  height: 60.9rem;
 }
 
 .about__awards {
@@ -411,7 +431,7 @@ nav {
 
 .project__wrapper {
   overflow-y: hidden;
-  overflow-x: scroll;
+  overflow-x: hidden;
   height: 100vh;
   width: 100vw;
 }
@@ -426,10 +446,23 @@ nav {
   min-width: max-content;
 }
 
+.project__nav__number {
+  font-size: 4.2rem;
+  font-weight: 600;
+}
+
+.project__nav__title {
+  font-weight: 600;
+}
+
+.project__nav__close {
+  opacity: 0.7;
+}
+
 .project__main-image {
   flex-shrink: 0;
   width: 100rem;
-  aspect-ratio: 16/9;
+  height: 58rem;
   overflow: hidden;
   margin-right: calc(4 * var(--base-spacing));
   opacity: 0;
@@ -463,9 +496,15 @@ nav {
 .project__details__table__line-col-1 {
   width: 24rem;
   flex-shrink: 0;
+  font-weight: 600;
+}
+
+.project__details__table__line-col-2 {
+  opacity: 0.7;
 }
 
 .project__link {
+  font-weight: 600;
   position: fixed;
   bottom: 0;
   left: var(--base-spacing);
@@ -482,8 +521,9 @@ nav {
 .project__media__item {
   position: relative;
   flex-shrink: 0;
+  width: 106rem;
   height: 80rem;
-  aspect-ratio: 16/12;
+  /* aspect-ratio: 16/12; */
   overflow: hidden;
   margin-right: calc(8 * var(--base-spacing));
   opacity: 0;
@@ -511,6 +551,7 @@ nav {
 
 .project__next-project__counter {
   margin-left: auto;
+  opacity: 0.7;
 }
 
 .project__next-project__image {
@@ -519,11 +560,16 @@ nav {
   height: 58rem;
   aspect-ratio: 16/9;
   overflow: hidden;
+  opacity: 0;
 }
 
 .project__next-project__bottom {
   margin-top: var(--base-spacing);
   display: flex;
+}
+
+.project__next-project__name {
+  font-weight: 600;
 }
 
 .project__next-project__link {

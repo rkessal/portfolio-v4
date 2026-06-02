@@ -1,10 +1,10 @@
 import { Mesh, Program, Texture } from "ogl"
 import { canvas } from "../canvas"
-import fragment from '../shaders/plane-fragment.glsl'
-import vertex from '../shaders/plane-vertex.glsl'
+import fragment from '../shaders/about-plane-fragment.glsl'
+import vertex from '../shaders/about-plane-vertex.glsl'
 import gsap from "gsap"
 
-export default class HomeMedia {
+export default class AboutMedia {
   constructor({ element, geometry, scene, index, gallery }) {
     this.element = element
     this.geometry = geometry
@@ -114,51 +114,6 @@ export default class HomeMedia {
       delay: delay + (this.index * 0.1),
       ease: 'expo.out',
     })
-  }
-
-  async transitionToProject(tl, bounds) {
-    const x = bounds.left / window.innerWidth
-    const y = bounds.top / window.innerHeight
-
-    const targetScaleX = this.sizes.width * (bounds.width / window.innerWidth)
-    const targetScaleY = this.sizes.height * (bounds.height / window.innerHeight)
-
-    const targetX = (-this.sizes.width / 2) + (targetScaleX / 2) + (x * this.sizes.width)
-    const targetY = (this.sizes.height / 2) - (targetScaleY / 2) - (y * this.sizes.height)
-
-    const startX = this.mesh.position.x
-    const startY = this.mesh.position.y
-    const totalDist = Math.hypot(targetX - startX, targetY - startY)
-
-    this.mesh.position.z = 0.0001
-
-    tl.to(this.program.uniforms.uSaturation, {
-      value: 1
-    }, 0)
-
-    tl.to(this.mesh.scale, {
-      x: targetScaleX,
-      y: targetScaleY,
-      duration: 1.6,
-      ease: 'power2.inOut',
-      onUpdate: () => {
-        this.program.uniforms.uPlaneSizes.value = [this.mesh.scale.x, this.mesh.scale.y]
-        this.program.uniforms.uViewportSizes.value = [this.sizes.width, this.sizes.height]
-
-        const dist = Math.hypot(
-          this.mesh.position.x - targetX,
-          this.mesh.position.y - targetY
-        )
-        const t = dist / totalDist  // 1 at start, 0 at arrival
-        this.program.uniforms.uStrength.value = Math.sin(t * Math.PI) * -0.01
-      }
-    }, '<')
-    tl.to(this.mesh.position, {
-      x: targetX,
-      y: targetY,
-      duration: 1.6,
-      ease: 'power2.inOut',
-    }, "<")
   }
 
   destroy() {

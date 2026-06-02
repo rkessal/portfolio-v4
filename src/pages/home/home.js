@@ -1,23 +1,21 @@
 import ENTER from "../../animations/enter"
 import template from "./home.html?raw"
-import * as pageCanvas from '../../canvas/home'
 import { MAIN } from "../../animations/home/main"
+import { createHomeCanvas } from "../../canvas/home"
+
+let instance = null
 
 export default function HomePage() {
   return template
 }
 
-export function init({ container, transition }) {
-  if (!transition) {
-    ENTER(container, 0.65)
-  }
-  pageCanvas.default()
+export function init({ container, params, transition }) {
+  instance = createHomeCanvas()
 }
 
 export function getCanvas() {
-  return pageCanvas
+  return instance
 }
 
-export function cleanup(currentNamespace) {
-  pageCanvas.cleanup(currentNamespace)
+export function cleanup() {
 }

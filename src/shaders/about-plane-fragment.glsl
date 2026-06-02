@@ -7,7 +7,6 @@ uniform float uRGBSplit;
 uniform float uSaturation;
 uniform float uAlpha;
 uniform float uProgress;
-uniform float uBlur;
 varying vec2 vUv;
 
 void main() {

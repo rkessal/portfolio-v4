@@ -5,11 +5,12 @@ import vertex from '../shaders/project-plane-vertex.glsl'
 import gsap from "gsap"
 
 export default class ProjectMedia {
-  constructor({ element, geometry, scene, index }) {
+  constructor({ element, geometry, scene, index, nextProject }) {
     this.element = element
     this.geometry = geometry
     this.scene = scene
     this.index = index
+    this.nextProject = nextProject
     this.gl = canvas.gl
 
     this.sizes = canvas.sizes
@@ -20,8 +21,6 @@ export default class ProjectMedia {
     this.createBounds()
 
     this.offResize = canvas.on('resize', this.onResize.bind(this))
-    this.offScroll = canvas.on('scroll', this.onScroll.bind(this))
-    this.offUpdate = canvas.on('update', this.update.bind(this))
   }
 
   createTexture() {
@@ -41,7 +40,7 @@ export default class ProjectMedia {
         uImageSizes: { value: [this.texture.image.naturalWidth, this.texture.image.naturalHeight] },
         uViewportSizes: { value: [this.sizes.width, this.sizes.height] },
         uStrength: { value: 0.0 },
-        uProgress: { value: 0 },
+        uSaturation: { value: 0.0 },
         uRotation: { value: 0.08 },
         uAlpha: { value: 0.0 }
       }
@@ -86,19 +85,11 @@ export default class ProjectMedia {
     this.createBounds()
   }
 
-  onScroll(e) {
-  }
-
-  update() {
-  }
-
   enter(onComplete, transitionMedia) {
-    console.log(this.index, transitionMedia)
-    gsap.to(this.program.uniforms.uProgress, {
-      value: 1,
-      duration: 1.6,
-      ease: 'expo.out',
-    })
+    if (transitionMedia && this.index === 0) {
+      this.program.uniforms.uAlpha.value = 1
+    }
+
     gsap.to(this.program.uniforms.uAlpha, {
       value: 1,
       duration: 1.6,
@@ -110,34 +101,41 @@ export default class ProjectMedia {
   transitionToProject(tl, bounds) {
     const x = bounds.left / window.innerWidth
     const y = bounds.top / window.innerHeight
-    const targetX = (-this.sizes.width / 2) + (this.mesh.scale.x / 2) + (x * this.sizes.width)
-    const targetY = (this.sizes.height / 2) - (this.mesh.scale.y / 2) - (y * this.sizes.height)
 
     const targetScaleX = this.sizes.width * (bounds.width / window.innerWidth)
     const targetScaleY = this.sizes.height * (bounds.height / window.innerHeight)
 
+    const targetX = (-this.sizes.width / 2) + (targetScaleX / 2) + (x * this.sizes.width)
+    const targetY = (this.sizes.height / 2) - (targetScaleY / 2) - (y * this.sizes.height)
+
+    this.mesh.position.z = 0.0001
+
+    tl.to(this.program.uniforms.uSaturation, {
+      value: 0,
+      duration: 1.6,
+      ease: 'power2.inOut',
+    }, '<')
     tl.to(this.mesh.scale, {
       x: targetScaleX,
       y: targetScaleY,
-      duration: 2,
+      duration: 1.6,
       ease: 'power2.inOut',
       onUpdate: () => {
         this.program.uniforms.uPlaneSizes.value = [this.mesh.scale.x, this.mesh.scale.y]
         this.program.uniforms.uViewportSizes.value = [this.sizes.width, this.sizes.height]
       }
-    }, 0)
+    }, '<')
     tl.to(this.mesh.position, {
       x: targetX,
       y: targetY,
-      duration: 2,
+      duration: 1.6,
       ease: 'power2.inOut',
-      onComplete: resolve
-    }, 0)
+    }, "<")
+
   }
 
   destroy() {
     this.offResize()
-    this.offScroll()
 
     if (!this.isTransition) {
       this.mesh.setParent(null)

@@ -2,175 +2,215 @@ import { Transform, Plane } from "ogl"
 import { canvas } from "../canvas"
 import ProjectMedia from "./project-media"
 import gsap from "gsap"
-import { SWITCH_PROJECT_INDEX } from "../animations/projects/main"
 import normalizeWheel from "normalize-wheel"
-import ENTER from "../animations/enter"
-import { router } from "../router"
+import { lenis } from "../lenis"
 
 const gl = canvas.gl
-let medias = null
-let group = null
-let gallery = null
 
-let projectWrapper = null
+export function createProjectCanvas() {
+  let medias = null
+  let group = null
+  let projectWrapper = null
 
-let offInit = null
-let offScroll = null
-let offResize = null
-let offUpdate = null
-let offTransition = null
-let offTransitionProject = null
+  let offInit = null
+  let offScroll = null
+  let offResize = null
+  let offUpdate = null
 
-let isTransitioning = false
+  let offTransition = null
+  let offTransitionProject = null
+  let isTransitioning = false
+  let currentProject = null
+  let hasInitialized = false
 
-let scroll = {
-  ease: 0.05,
-  current: 0,
-  target: 0,
-  last: 0,
-  strength: 0.5,
-  limit: 0,
-  direction: 'stopped',
-}
+  let scroll = {
+    ease: lenis.lenis.options.lerp,
+    current: 0,
+    target: 0,
+    last: 0,
+    strength: 0.5,
+    limit: 0,
+    direction: 'stopped',
+    overflowThreshold: window.innerWidth * 0.01,
+    overscroll: 0,
+    maxSpeed: 0.025
+  }
 
-let currentProject = null
+  let nextProject = {
+    percent: 0,
+    counter: null,
+    link: null
+  }
+  let destroyed = false
 
-export default function createProjectCanvas() {
   if (offInit) offInit()
   offInit = canvas.on('init', init)
-  offTransition = canvas.on('transition-home->project', transitionHomeProject)
+  offTransition = canvas.on('transition-home->project', transitionIn)
   offTransitionProject = canvas.on('transition-project->project', transitionProjectProject)
-  canvas.registerCanvas('project', {
-    getState: () => ({ isTransitioning })
-  })
-}
+  canvas.registerCanvas('project', { getState })
 
-export function getState() {
-  return {
-    medias,
-    isTransitioning,
-  }
-}
+  function init({ namespace, transitionMedia, params, from } = {}) {
+    if (hasInitialized || !params?.id || isTransitioning || namespace !== 'project' || destroyed) return
 
-export function onTransition() {
-  isTransitioning = true
-}
+    currentProject = params.id
+    hasInitialized = true
 
-export function init({ namespace, previousNamespace, transitionMedia, params }) {
-  console.log(transitionMedia, isTransitioning)
-  currentProject = params?.id
-  if (!params.id || isTransitioning || namespace !== 'project') {
-    return
-  }
-  isTransitioning = true
+    onTransition()
 
-  offScroll = canvas.on('scroll', onScroll)
-  offResize = canvas.on('resize', onResize)
-  offUpdate = canvas.on('update', update)
+    projectWrapper = document.querySelector(`[data-project-id="${currentProject}"] .project__container`)
+    nextProject.link = projectWrapper.querySelector('.project__next-project__link__wrapper')
+    nextProject.counter = projectWrapper.querySelector('.project__next-project__counter')
 
-  group = new Transform()
-  group.setParent(canvas.scene)
+    offScroll = canvas.on('scroll', onScroll)
+    offResize = canvas.on('resize', onResize)
+    offUpdate = canvas.on('update', update)
 
-  projectWrapper = document.querySelector(`[data-project-id="${currentProject}"] .project__container`)
+    group = new Transform()
+    group.setParent(canvas.scene)
+    group.name = `project-${currentProject}`
 
-  const geometry = new Plane(gl, {
-    heightSegments: 20,
-    widthSegments: 20
-  })
-  const elements = [...projectWrapper.querySelectorAll('.project__main-image img, .project__media__item img, .project__next-project__image img')]
-  medias = elements.map((element, index) => new ProjectMedia({
-    element,
-    geometry,
-    scene: group,
-    index,
-    scroll,
-  }))
 
-  medias.filter((media, index) => {
-    if (transitionMedia) {
-      console.log('passed')
-      return index !== 0
-    } else {
-      return true
-    }
-  }).forEach((media, index) => media.enter(onFinishTransition, transitionMedia))
+    const geometry = new Plane(gl, {
+      heightSegments: 20,
+      widthSegments: 20
+    })
 
-  onResize()
-}
+    const elements = [...projectWrapper.querySelectorAll('.project__main-image img, .project__media__item img, .project__next-project__image img')]
+    medias = elements.map((element, index) => new ProjectMedia({
+      element,
+      geometry,
+      scene: group,
+      index,
+      scroll,
+      nextProject,
+    }))
 
-async function transitionHomeProject({ currentMedia, params }) {
-  init({ namespace: 'project', transitionMedia: currentMedia, params })
-  currentMedia.mesh.setParent(group)
-  currentMedia.isTransition = true
-}
+    medias.forEach(media => media.enter(onFinishTransition, transitionMedia))
 
-async function transitionProjectProject({ currentMedia, params }) {
-  console.log(currentMedia)
-  init({ namespace: 'project', transitionMedia: currentMedia, params })
-  currentMedia.isTransition = true
-}
-
-function onFinishTransition(index, transitionMedia) {
-  if (transitionMedia) {
-    transitionMedia.isTransition = false
-    transitionMedia.destroy()
+    onResize()
   }
 
-  if (isTransitioning) {
+  function onTransition() {
+    isTransitioning = true
+  }
+
+  function onFinishTransition(index, transitionMedia) {
+    canvas.handleScroll(false)
     isTransitioning = false
+    if (transitionMedia) {
+      transitionMedia.destroy()
+    }
   }
-}
 
-function onScroll(e) {
-  if (isTransitioning) return
-  const { pixelY } = normalizeWheel(e)
-  scroll.target -= pixelY * canvas.sizes.ratioX * scroll.strength
-}
+  function onScroll(e) {
+    if (isTransitioning) {
+      return
+    }
+    const { pixelY } = normalizeWheel(e)
+    const delta = pixelY * canvas.sizes.ratioX * scroll.strength
 
-function onResize() {
-  const first = medias[0].mesh
-  const last = medias[medias.length - 1].mesh
-  scroll.limit = (projectWrapper.scrollWidth - window.innerWidth) * canvas.sizes.ratioX
-  scroll.current = 0
-  scroll.target = 0
-  scroll.last = 0
-}
+    if (scroll.target <= -scroll.limit) {
+      if (delta > 0) {
+        scroll.overscroll = gsap.utils.clamp(0, scroll.overflowThreshold, scroll.overscroll + delta)
+      } else {
+        scroll.overscroll = gsap.utils.clamp(0, scroll.overflowThreshold, scroll.overscroll + delta)
+        if (scroll.overscroll <= 0) {
+          scroll.target -= delta
+        }
+      }
+    } else {
+      scroll.target -= delta
+    }
+  }
 
-function update() {
-  scroll.target = gsap.utils.clamp(-scroll.limit, 0, scroll.target)
-  scroll.current = gsap.utils.interpolate(scroll.current, scroll.target, scroll.ease)
-  const diff = scroll.current - scroll.last
-  scroll.direction = diff > 0 ? 'down' : diff < 0 ? 'up' : 'stopped'
+  function onResize() {
+    scroll.limit = (projectWrapper.scrollWidth - window.innerWidth) * canvas.sizes.ratioX
+    scroll.current = 0
+    scroll.target = 0
+    scroll.last = 0
+    scroll.overscroll = null
+  }
 
-  medias.forEach((media, index) => {
-    media.mesh.position.x += diff
-    media.program.uniforms.uStrength.value = diff / canvas.sizes.height
+  function update() {
+    scroll.target = gsap.utils.clamp(-scroll.limit, 0, scroll.target)
+    scroll.current = gsap.utils.interpolate(scroll.current, scroll.target, scroll.ease)
+    const diff = scroll.current - scroll.last
+    scroll.direction = diff > 0 ? 'down' : diff < 0 ? 'up' : 'stopped'
 
-    const distFromCenter = media.mesh.position.x / canvas.sizes.width
-    media.program.uniforms.uRotation.value = gsap.utils.clamp(0, 1, distFromCenter)
-  })
-  gsap.set(projectWrapper, { x: scroll.current / (canvas.sizes.ratioX) })
+    const speed = Math.abs(diff)
+    if (speed <= scroll.maxSpeed) {
+      nextProject.percent = Math.round((scroll.overscroll / scroll.overflowThreshold) * 100)
+      if (nextProject.percent > 0) {
+        onOverscroll(nextProject.percent)
+      }
+    } else {
+      scroll.overscroll = 0
+      nextProject.percent = 0
+    }
 
-  const wrapperBounds = projectWrapper.getBoundingClientRect()
-  const firstElementBounds = medias[0].element.getBoundingClientRect()
+    medias.forEach(media => {
+      media.mesh.position.x += diff
+      media.program.uniforms.uStrength.value = diff / canvas.sizes.height
+      const distFromCenter = media.mesh.position.x / canvas.sizes.width
+      media.program.uniforms.uRotation.value = gsap.utils.clamp(0, 1, distFromCenter)
+      if (media.index !== medias.length - 1) {
+        media.program.uniforms.uSaturation.value = gsap.utils.clamp(0, 1, distFromCenter)
+      } else {
+        if (isTransitioning) return
+        media.program.uniforms.uSaturation.value = -0.5 * (nextProject.percent / 100) + 0.5
+      }
+    })
 
-  scroll.last = scroll.current
-}
+    gsap.set(projectWrapper, { x: scroll.current / canvas.sizes.ratioX })
 
-export function cleanup() {
-  const _group = group
-  const _medias = medias
-  const _offScroll = offScroll
-  const _offResize = offResize
-  const _offUpdate = offUpdate
 
-  _offScroll?.()
-  _offResize?.()
-  _offUpdate?.()
-  _medias?.forEach(m => m.destroy())
-  _group?.setParent(null)
+    scroll.last = scroll.current
+  }
 
-  isTransitioning = false
-  medias = null
-  group = null
+  function onOverscroll(percent) {
+    if (destroyed) return
+    const cleanPercent = gsap.utils.clamp(0, 100, percent)
+    nextProject.counter.innerText = `${cleanPercent}%`
+
+    if (percent >= 100) {
+      nextProject.link.click()
+      destroyed = true
+      return
+    }
+  }
+
+  function cleanup() {
+    destroyed = true
+    offInit()
+    offTransition()
+    offTransitionProject()
+    offScroll()
+    offResize()
+    offUpdate()
+    medias.forEach(m => m.destroy())
+    group.setParent(null)
+    isTransitioning = false
+    medias = null
+    group = null
+    projectWrapper = null
+    nextProject = {
+      percent: 0,
+      counter: null,
+      link: null
+    }
+  }
+
+  function getState() {
+    return { medias, isTransitioning, scroll, name: 'project' }
+  }
+
+  function transitionIn({ currentMedia, params }) {
+    init({ namespace: 'project', transitionMedia: currentMedia, params, from: 'transitionIn' })
+  }
+
+  function transitionProjectProject({ currentMedia, params }) {
+    init({ namespace: 'project', transitionMedia: currentMedia, params, from: 'transitionProject' })
+  }
+
+  return { init, cleanup, getState, transitionIn, onTransition }
 }

@@ -2,6 +2,8 @@ import { Camera, Program, Renderer, Transform, Mesh, Box, Texture } from "ogl";
 
 import fragment from './shaders/plane-fragment.glsl'
 import vertex from './shaders/plane-vertex.glsl'
+import gsap from "gsap";
+import { lenis } from "./lenis";
 
 class Canvas {
   constructor() {
@@ -24,7 +26,7 @@ class Canvas {
 
     document.body.appendChild(this.gl.canvas)
 
-    window.addEventListener('resize', this.onResize, false)
+    window.addEventListener('resize', this.onResize, { passive: true })
     window.addEventListener('wheel', this.onScroll, false)
 
     this.createScene()
@@ -77,6 +79,10 @@ class Canvas {
       ratioX: width / window.innerWidth,
     }
 
+    lenis.lenis.scrollTo(0, {
+      immediate: true
+    })
+
     this.emit('resize', this.sizes)
   }
 
@@ -128,9 +134,7 @@ class Canvas {
   }
 
   registerCanvas(name, canvas) {
-    if (!this.registeredCanvas.has(name)) {
-      this.registeredCanvas.set(name, canvas)
-    }
+    this.registeredCanvas.set(name, canvas)
   }
 
   isTransitioning() {
@@ -141,6 +145,14 @@ class Canvas {
     }
 
     return false
+  }
+
+  handleScroll(lock) {
+    if (lock) {
+      lenis.lenis.stop()
+    } else {
+      lenis.lenis.start()
+    }
   }
 
 }
