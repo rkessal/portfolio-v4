@@ -188,7 +188,7 @@ main {
 }
 
 a {
-  color: var(--col-foreground);
+  color: currentColor;
   text-decoration: none;
   text-transform: uppercase;
 }
