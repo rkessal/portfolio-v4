@@ -24,6 +24,7 @@ export default class AboutMedia {
 
   createTexture() {
     const cached = canvas.getTexture(this.element.src)
+    console.log(this.element.src)
 
     this.texture = cached
   }
