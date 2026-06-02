@@ -125,7 +125,7 @@ class Canvas {
         }
 
         image.onerror = (err) => {
-          // console.log(err)
+          console.log(err)
           resolve()
         }
       })

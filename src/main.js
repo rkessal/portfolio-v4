@@ -14,7 +14,7 @@ const images = import.meta.glob('/**/*.{webp,jpg,png}', { eager: true, query: '?
 const url = new URL(window.location.href)
 const textures = Object.entries(images).map(([path, url]) => ({
   key: path.replace('/public', '').replace('/assets', ''),
-  url: url.replace('/public', '').replace('/assets', '')
+  url: url
 }))
 
 console.log(textures)
