@@ -122,7 +122,10 @@ class Canvas {
           resolve()
         }
 
-        image.onerror = resolve
+        image.onerror = (err) => {
+          console.log(err)
+          resolve()
+        }
       })
     })
 
