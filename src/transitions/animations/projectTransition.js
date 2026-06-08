@@ -6,9 +6,13 @@ import { SplitText } from "gsap/SplitText";
 
 export async function projectLeftTransition(currentContainer, nextContainer, currentCanvas, params) {
   const t = nextContainer?.querySelectorAll('.project__details__description, .project__details__table__line p')
-  const { medias } = currentCanvas.getState()
 
-  currentCanvas.onTransition()
+  let medias = []
+  if (currentCanvas) {
+    medias = currentCanvas.getState().medias
+    currentCanvas.onTransition()
+  }
+
 
   gsap.set(nextContainer, {
     opacity: 0,
@@ -41,7 +45,9 @@ export async function projectLeftTransition(currentContainer, nextContainer, cur
     yPercent: -100
   }, 0)
 
-  currentMedia.transitionToProject(tl, bounds)
+  if (currentMedia) {
+    currentMedia.transitionToProject(tl, bounds)
+  }
 
   const currentNamespace = currentContainer.getAttribute('data-namespace')
   const nextNamespace = nextContainer.getAttribute('data-namespace')

@@ -46,6 +46,8 @@ export function createHomeCanvas() {
     hovering = false
     hasInitialized = true
 
+    canvas.precompileShaders()
+
     onTransition()
 
     offScroll = canvas.on('scroll', onScroll)
@@ -58,15 +60,10 @@ export function createHomeCanvas() {
     galleryWrapper = document.querySelector('.home__projects')
     gallery = document.querySelector('.home__projects__gallery')
 
-    const geometry = new Plane(gl, {
-      heightSegments: 20,
-      widthSegments: 20
-    })
-
     const elements = [...document.querySelectorAll('.home__projects__item__img img')]
     medias = elements.map((element, index) => new HomeMedia({
       element,
-      geometry,
+      geometry: canvas.geometry,
       scene: group,
       index,
       scroll,
@@ -76,8 +73,10 @@ export function createHomeCanvas() {
     const delay = 0.8
     medias.forEach(media => {
       media.enter(onFinishTransition, delay)
-      media.element.addEventListener('mouseenter', () => onMouseEnter(media))
-      media.element.addEventListener('mouseleave', () => onMouseLeave(media))
+      media.onMouseEnter = () => onMouseEnter(media)
+      media.onMouseLeave = () => onMouseLeave(media)
+      media.element.addEventListener('mouseenter', media.onMouseEnter)
+      media.element.addEventListener('mouseleave', media.onMouseLeave)
     })
     onResize()
   }
@@ -87,6 +86,10 @@ export function createHomeCanvas() {
   }
 
   function onFinishTransition(index) {
+    if (canvas.isMobile()) {
+      return
+    }
+
     if (index === medias.length - 1 && isTransitioning) {
       isTransitioning = false
       canvas.handleScroll(false)
@@ -238,9 +241,9 @@ export function createHomeCanvas() {
     offTransitionAbout()
     offTransitionProject()
     medias.forEach(m => {
+      m.element.removeEventListener('mouseenter', m.onMouseEnter)
+      m.element.removeEventListener('mouseleave', m.onMouseLeave)
       m.destroy()
-      m.element.removeEventListener('mouseenter', () => onMouseEnter(m.element))
-      m.element.removeEventListener('mouseleave', () => onMouseLeave(m.element))
     })
 
     group.setParent(null)

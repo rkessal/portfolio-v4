@@ -20,7 +20,9 @@ export async function executeTransition({ nextHTML, nextNamespace, nextModule, c
   const currentNamespace = currentContainer.getAttribute('data-namespace')
 
   const currentCanvas = currentModule.getCanvas()
-  currentCanvas.onTransition()
+  if (currentCanvas) {
+    currentCanvas.onTransition()
+  }
 
   const nextContainer = currentContainer.cloneNode(false)
   nextContainer.setAttribute('data-namespace', nextNamespace)
@@ -46,7 +48,9 @@ export async function executeTransition({ nextHTML, nextNamespace, nextModule, c
     params,
   })
 
-  currentCanvas.cleanup()
+  if (currentCanvas) {
+    currentCanvas.cleanup()
+  }
   currentModule.cleanup()
 
   window.scrollTo({ top: 0 })

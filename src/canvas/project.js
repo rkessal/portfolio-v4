@@ -52,6 +52,8 @@ export function createProjectCanvas() {
   function init({ namespace, transitionMedia, params, from } = {}) {
     if (hasInitialized || !params?.id || isTransitioning || namespace !== 'project' || destroyed) return
 
+    canvas.precompileShaders()
+
     currentProject = params.id
     hasInitialized = true
 
@@ -69,16 +71,10 @@ export function createProjectCanvas() {
     group.setParent(canvas.scene)
     group.name = `project-${currentProject}`
 
-
-    const geometry = new Plane(gl, {
-      heightSegments: 20,
-      widthSegments: 20
-    })
-
     const elements = [...projectWrapper.querySelectorAll('.project__main-image img, .project__media__item img, .project__next-project__image img')]
     medias = elements.map((element, index) => new ProjectMedia({
       element,
-      geometry,
+      geometry: canvas.geometry,
       scene: group,
       index,
       scroll,

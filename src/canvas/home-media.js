@@ -27,9 +27,34 @@ export default class HomeMedia {
   }
 
   createTexture() {
-    const cached = canvas.getTexture(this.element.getAttribute('data-src'))
+    const src = this.element.getAttribute('data-src')
+    const cached = canvas.getTexture(src)
 
-    this.texture = cached
+    if (cached) {
+      this.texture = cached
+      const bitmap = cached._bitmap
+      this.imageWidth = bitmap?.width ?? cached.image?.naturalWidth ?? 1
+      this.imageHeight = bitmap?.height ?? cached.image?.naturalHeight ?? 1
+      return
+    }
+
+    // fallback
+    this.texture = new Texture(this.gl, {
+      generateMipmaps: false,
+      minFilter: this.gl.LINEAR,
+      magFilter: this.gl.LINEAR,
+    })
+    this.imageWidth = 1
+    this.imageHeight = 1
+
+    const image = new Image()
+    image.src = src
+    image.onload = async () => {
+      const bitmap = await createImageBitmap(image, { imageOrientation: 'flipY' })
+      this.texture.image = bitmap
+      this.texture._bitmap = bitmap
+      this.program.uniforms.uImageSizes.value = [bitmap.width, bitmap.height]
+    }
   }
 
   createProgram() {
@@ -42,7 +67,7 @@ export default class HomeMedia {
       uniforms: {
         tMap: { value: this.texture },
         uPlaneSizes: { value: [0, 0] },
-        uImageSizes: { value: [this.texture.image.naturalWidth, this.texture.image.naturalHeight] },
+        uImageSizes: { value: [this.imageWidth, this.imageHeight] },
         uViewportSizes: { value: [this.sizes.width, this.sizes.height] },
         uStrength: { value: 0.0 },
         uProgress: { value: 0 },

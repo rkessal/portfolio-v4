@@ -41,6 +41,8 @@ export function createAboutCanvas() {
 
     hasInitialized = true
 
+    canvas.precompileShaders()
+
     onTransition()
 
     offScroll = canvas.on('scroll', onScroll)
@@ -53,15 +55,10 @@ export function createAboutCanvas() {
     aboutWrapper = document.querySelector('.about__description')
     // gallery = document.querySelector('.home__projects__gallery')
 
-    const geometry = new Plane(gl, {
-      heightSegments: 20,
-      widthSegments: 20
-    })
-
     const elements = [...aboutWrapper.querySelectorAll('img')]
     medias = elements.map((element, index) => new AboutMedia({
       element,
-      geometry,
+      geometry: canvas.geometry,
       scene: group,
       index,
       scroll,
@@ -70,8 +67,10 @@ export function createAboutCanvas() {
     const delay = 0.8
     medias.forEach(media => {
       media.enter(onFinishTransition, delay)
-      media.element.addEventListener('mouseenter', () => onMouseEnter(media))
-      media.element.addEventListener('mouseleave', () => onMouseLeave(media))
+      media.onMouseEnter = () => onMouseEnter(media)
+      media.onMouseLeave = () => onMouseLeave(media)
+      media.element.addEventListener('mouseenter', media.onMouseEnter)
+      media.element.addEventListener('mouseleave', media.onMouseLeave)
     })
     onResize()
   }
@@ -98,7 +97,6 @@ export function createAboutCanvas() {
   }
 
   function onMouseLeave(media) {
-    console.log(media.originalScale)
     gsap.to(media.mesh.scale, {
       x: media.originalScale.x,
       y: media.originalScale.y,
@@ -148,8 +146,8 @@ export function createAboutCanvas() {
     offUpdate()
     offTransition()
     medias.forEach(m => {
-      m.element.removeEventListener('mouseenter', onMouseEnter)
-      m.element.removeEventListener('mouseleave', onMouseLeave)
+      m.element.removeEventListener('mouseenter', m.onMouseEnter)
+      m.element.removeEventListener('mouseleave', m.onMouseLeave)
       m.destroy()
     })
 

@@ -4,7 +4,11 @@ import ENTER from "../../animations/projects/enter";
 import { router } from "../../router";
 
 export async function homeProjectTransition(currentContainer, nextContainer, currentCanvas, params) {
-  const { medias } = currentCanvas.getState()
+  let medias = []
+  if (currentCanvas) {
+    medias = currentCanvas.getState().medias
+    currentCanvas.onTransition()
+  }
 
   const currentMedia = medias.find(media => {
     const link = media.element.closest('a')
@@ -13,8 +17,6 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
 
     return path === currentPath
   })
-
-  currentCanvas.onTransition()
 
   const mainImage = nextContainer.querySelector('.project__main-image')
 
@@ -81,7 +83,11 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
 }
 
 export async function projectHomeTransition(currentContainer, nextContainer, currentCanvas) {
-  const { medias } = currentCanvas.getState()
+  let medias = []
+  if (currentCanvas) {
+    medias = currentCanvas.getState().medias
+    currentCanvas.onTransition()
+  }
 
   gsap.set(nextContainer, {
     clipPath: 'inset(100% 0% 0% 0%)',
@@ -94,7 +100,6 @@ export async function projectHomeTransition(currentContainer, nextContainer, cur
     willChange: 'transform, clip-path, scale'
   })
 
-  currentCanvas.onTransition()
 
   const tl = gsap.timeline()
 

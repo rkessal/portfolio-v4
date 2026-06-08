@@ -2,7 +2,7 @@ import gsap from "gsap"
 import { SplitText } from "gsap/SplitText"
 
 const ENTER = (nextContainer, delay) => {
-  const t = nextContainer?.querySelectorAll('.home__projects__title, .home__projects__list li')
+  const t = nextContainer?.querySelectorAll('.home__projects__title')
 
   if (!t) return null
 

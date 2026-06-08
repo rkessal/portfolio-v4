@@ -19,5 +19,9 @@ const textures = Object.entries(images).map(([path, url]) => ({
 
 await lenis.init()
 await canvas.init()
-await canvas.preload(textures)
+await canvas.preload(textures, (progress, loaded, total) => {
+  const percent = Math.round(progress * 100)
+  // loader.textContent = `${percent}%`
+  console.log(`loading => ${percent}`)
+})
 await router.init()

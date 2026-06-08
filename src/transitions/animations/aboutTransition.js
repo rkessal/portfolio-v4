@@ -6,10 +6,13 @@ import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export async function homeAboutTransition(currentContainer, nextContainer, currentCanvas, params) {
-  const t = nextContainer?.querySelectorAll('.about__title, .about__description p, .about__socials span, .about__awards span .about__break__1 span, .about__awards__line p, .about__awards__line span, .about__socials__platform li')
-  const { medias } = currentCanvas.getState()
+  const t = nextContainer?.querySelectorAll('.about__title, .about__description p, .about__break__1 span, .about__socials span, .about__awards span .about__break__1 span, .about__awards__line p, .about__awards__line span, .about__socials__platform li')
 
-  currentCanvas.onTransition()
+  let medias = []
+  if (currentCanvas) {
+    medias = currentCanvas.getState().medias
+    currentCanvas.onTransition()
+  }
 
   gsap.set(nextContainer, {
     opacity: 0,
@@ -84,20 +87,23 @@ export async function homeAboutTransition(currentContainer, nextContainer, curre
 
 export async function aboutHomeTransition(currentContainer, nextContainer, currentCanvas) {
   const t = currentContainer?.querySelectorAll('.line, .line-transition')
-  const { medias } = currentCanvas.getState()
+
+  let medias = []
+  if (currentCanvas) {
+    medias = currentCanvas.getState().medias
+    currentCanvas.onTransition()
+  }
 
   gsap.set(nextContainer, {
-    clipPath: 'inset(100% 0% 0% 0%)',
-    opacity: 1,
+    opacity: 0,
     position: 'fixed',
     top: 0,
     left: 0,
     width: "100%",
     height: '100vh',
-    willChange: 'transform, clip-path, scale'
+    willChange: 'transform, clip-path, scale',
   })
 
-  currentCanvas.onTransition()
 
   const tl = gsap.timeline()
 
@@ -127,17 +133,9 @@ export async function aboutHomeTransition(currentContainer, nextContainer, curre
   const nextNamespace = nextContainer.getAttribute('data-namespace')
 
 
-  tl.to(currentContainer, {
-    autoAlpha: 0.6,
-    force3D: true,
-    duration: 0.6,
-    ease: 'power2.inOut',
-  }, '<').to(nextContainer, {
-    clipPath: 'inset(0% 0% 0% 0%)',
-    duration: 0.6,
-    ease: 'power2.inOut',
-    force3D: true,
-  }, '<')
+  tl.to(nextContainer, {
+    opacity: 1,
+  })
 
   tl.to(currentContainer, {
     onStart: () => canvas.emit(`transition-${currentNamespace}->${nextNamespace}`)
