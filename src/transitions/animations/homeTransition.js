@@ -57,7 +57,9 @@ export async function homeProjectTransition(currentContainer, nextContainer, cur
   })
 
   const bounds = mainImage.getBoundingClientRect()
-  currentMedia.transitionToProject(tl, bounds)
+  if (currentMedia) {
+    currentMedia.transitionToProject(tl, bounds)
+  }
 
   tl.to(nextContainer, {
     clipPath: 'inset(0% 0% 0% 0%)',

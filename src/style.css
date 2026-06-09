@@ -240,6 +240,44 @@ img {
   transform-origin: left center;
 }
 
+.preloader {
+  position: fixed;
+  z-index: 999;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--col-foreground);
+  color: var(--col-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  clip-path: inset(0% 0% 0% 0%);
+}
+
+
+
+.preloader .nav__logo {
+  scale: 3;
+  width: auto;
+  opacity: 0;
+}
+
+.preloader .nav__logo svg path {
+  fill: var(--col-white);
+}
+
+.preloader__separator {
+  margin-block: calc(2 * var(--base-spacing));
+  width: 0.1rem;
+  background: var(--col-white);
+  height: 10rem;
+  transform: scaleY(0.04);
+}
+
+.preloader__number {
+  /* margin: var(--base-spacing); */
+}
+
 nav {
   padding: var(--base-spacing);
   position: fixed;
@@ -613,6 +651,11 @@ nav {
   opacity: 0;
 }
 
+[data-project-id="limeears"] .project__media__item {
+  width: 134rem;
+  height: 80rem;
+}
+
 .project__next-project__wrapper {
   width: 100vw;
 }
@@ -815,14 +858,16 @@ nav {
     display: none;
   }
 
-  .about img {
-    opacity: 1;
-  }
-
+  .about img,
   .project__media__item,
   .project__next-project__image,
   .project__main-image,
-  .home__projects__item__img {
+  .home__projects__item__img img {
     opacity: 1;
+  }
+
+
+  .preloader {
+    display: none;
   }
 }

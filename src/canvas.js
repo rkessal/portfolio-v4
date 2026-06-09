@@ -164,7 +164,7 @@ class Canvas {
   }
 
   async preload(srcs, onProgress) {
-    if (this.isMobile()) return
+    if (this.isMobile()) return Promise.resolve()
 
     const pending = new Map()
     let loaded = 0
