@@ -835,9 +835,9 @@ nav {
   }
 
   .project__media__item {
-    width: 100%;
-    height: auto;
-    margin-bottom: calc(4* var(--base-spacing));
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: calc(4* var(--base-spacing)) !important;
   }
 
   .project__next-project__wrapper {
